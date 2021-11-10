@@ -1,0 +1,12 @@
+# main settings
+redis: "127.0.0.1:6379"
+
+db_url: "postgres://tempuser:temppass@127.0.0.1:5432/tempdb?sslmode=disable"
+
+server:
+  bindAddr: ":8080"
+
+keys:
+  secret_key:
+  refresh_key:
+  token_ttl: "24h"
