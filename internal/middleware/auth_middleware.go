@@ -64,6 +64,7 @@ func (a *authMiddleware) authCheck(next http.Handler) http.Handler {
 			apierrors.HandleHTTPErr(w, apierrors.ErrInvalidLogin, http.StatusForbidden)
 			return
 		}
+
 		var ct apictx.UserCtx
 		ctx := context.WithValue(r.Context(), ct, tk.UserID)
 		r = r.WithContext(ctx)

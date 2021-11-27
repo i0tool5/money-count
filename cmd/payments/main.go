@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"simpleAPI/core/config"
 	"simpleAPI/core/db"
 	"simpleAPI/core/server"
 	"simpleAPI/internal/middleware"
+	"simpleAPI/internal/service"
 
 	pmods "simpleAPI/internal/models/payments"
 	"simpleAPI/internal/models/users"
@@ -44,7 +44,8 @@ func main() {
 
 	// payments settings
 	db := pmods.New(dbs)
-	p := pviews.New(db)
+	svc := service.New(db)
+	p := pviews.New(svc)
 
 	// middleware settings
 	mvs := middleware.New(cfg.Keys.SecretKey)
@@ -62,6 +63,6 @@ func main() {
 	r.HandleFunc("/api/payments/{id}", p.Destroy).Methods("DELETE")
 
 	srv := server.New(cfg.Server.BindAddr)
-	fmt.Printf("[*] Starting server on %s\n", cfg.Server.BindAddr)
+	log.Printf("[*] Starting server on %s\n", cfg.Server.BindAddr)
 	srv.ListenAndServe(ctx, r)
 }

@@ -9,6 +9,7 @@ services:
     env_file: ./etc/db/.env
     ports:
       - "5432:5432"
+    command: ['-c', 'log_statement=all']
 
 volumes:
   db-data:

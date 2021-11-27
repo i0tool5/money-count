@@ -19,25 +19,18 @@ type Payments struct {
 	*db.Database
 }
 
-/*
-	TODO: remove service logic (json struct tags).
-	Make it 'CLEAN'
-*/
-
 // Payment represet payment model
 type Payment struct {
-	ID          int64  `json:"id,omitempty" gorm:"column:id"`
-	UserID      int64  `json:"user_id,omitempty" gorm:"column:user_id"`
-	Date        string `json:"date" gorm:"column:date"`
-	Type        string `json:"type" gorm:"column:type"`
-	Description string `json:"description" gorm:"column:description"`
-	Amount      int64  `json:"amount" gorm:"column:amount"`
+	ID          int64  `gorm:"primaryKey,column:id"`
+	UserID      int64  `gorm:"column:user_id"`
+	Date        string `gorm:"column:date"`
+	Type        string `gorm:"column:type"`
+	Description string `gorm:"column:description"`
+	Amount      int64  `gorm:"column:amount"`
 }
 
 // List represents list of payments
-type List struct {
-	Payments []Payment `json:"payments"`
-}
+type List []Payment
 
 // New config for payments
 func New(db *db.Database) *Payments {
@@ -57,11 +50,10 @@ func (p *Payments) All(ctx context.Context,
 	userID int64) (pl *List, err error) {
 
 	pl = new(List)
-	pl.Payments = make([]Payment, 0)
 
 	err = p.DB.WithContext(ctx).
 		Where("user_id = ?", userID).
-		Find(&pl.Payments).
+		Find(pl).
 		Error
 
 	return
@@ -100,6 +92,8 @@ func (p *Payments) Get(ctx context.Context, pay *Payment) (err error) {
 func (p *Payments) Update(ctx context.Context, pay *Payment) (err error) {
 	res := p.DB.WithContext(ctx).
 		Model(pay).
+		Where("user_id = ?", pay.UserID).
+		Omit("user_id").
 		Updates(pay)
 
 	if err = res.Error; err != nil {
