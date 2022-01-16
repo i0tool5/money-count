@@ -120,6 +120,9 @@ func (p *Payment) Destroy(w http.ResponseWriter, r *http.Request) {
 		ID:     int64(id),
 		UserID: uid,
 	})
+	if err != nil {
+		apierrors.HandleHTTPErr(w, err, http.StatusNotFound)
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"simpleAPI/internal/models/payments"
+	"simpleAPI/internal/models"
 )
 
 type PaymentsSvc struct {
@@ -36,7 +36,7 @@ func (pt *Payment) FromJSON(b []byte) (err error) {
 	return json.Unmarshal(b, pt)
 }
 
-func (p *Payment) fromModel(m *payments.Payment) {
+func (p *Payment) fromModel(m *models.Payment) {
 	p.ID = m.ID
 	p.UserID = m.UserID
 	p.Date = m.Date
@@ -45,8 +45,8 @@ func (p *Payment) fromModel(m *payments.Payment) {
 	p.Amount = m.Amount
 }
 
-func (p *Payment) toModel() (m *payments.Payment) {
-	return &payments.Payment{
+func (p *Payment) toModel() (m *models.Payment) {
+	return &models.Payment{
 		ID:          p.ID,
 		UserID:      p.UserID,
 		Date:        p.Date,
@@ -70,19 +70,19 @@ func (svc *PaymentsSvc) Create(ctx context.Context, uid int64, data []byte) (err
 
 	p.UserID = uid
 
-	return svc.db.Insert(ctx, p.toModel())
+	return svc.db.Payments().Create(ctx, p.toModel())
 }
 
 // Retrieve specific payment
 func (svc *PaymentsSvc) Retrieve(ctx context.Context, userID, payID int64) (
 	ps *Payment, err error) {
 
-	pm := new(payments.Payment)
+	pm := new(models.Payment)
 	pm.ID = payID
 
 	ps = new(Payment)
 
-	err = svc.db.Get(ctx, pm)
+	err = svc.db.Payments().Get(ctx, pm)
 	if err != nil {
 		return nil, err
 	}
@@ -92,22 +92,22 @@ func (svc *PaymentsSvc) Retrieve(ctx context.Context, userID, payID int64) (
 
 // Update a payment
 func (svc *PaymentsSvc) Update(ctx context.Context, p *Payment) (err error) {
-	return svc.db.Update(ctx, p.toModel())
+	return svc.db.Payments().Update(ctx, p.toModel())
 }
 
 // Delete a payment
 func (svc *PaymentsSvc) Delete(ctx context.Context, p *Payment) (err error) {
-	return svc.db.Delete(ctx, p.toModel())
+	return svc.db.Payments().Delete(ctx, p.toModel())
 }
 
 // List payments
 func (svc *PaymentsSvc) List(ctx context.Context, uid int64) (
 	pl *PaymentsList, err error) {
 
-	var ml *payments.List
+	var ml *models.PaymentsList
 	pl = new(PaymentsList)
 
-	ml, err = svc.db.All(ctx, uid)
+	ml, err = svc.db.Payments().All(ctx, uid)
 	if err != nil {
 		return nil, err
 	}

@@ -1,11 +1,10 @@
-package payments
+package database
 
 import (
 	"context"
 	"errors"
 
-	"simpleAPI/core/apierrors"
-	"simpleAPI/core/db"
+	"simpleAPI/internal/models"
 
 	"gorm.io/gorm"
 )
@@ -14,31 +13,20 @@ var (
 	ErrPaymentNotFound = errors.New("payment not found")
 )
 
+var _ models.Payments = (*Payments)(nil)
+
 // Payments is payments config
 type Payments struct {
-	*db.Database
+	*Database
 }
 
-// Payment represet payment model
-type Payment struct {
-	ID          int64  `gorm:"primaryKey,column:id"`
-	UserID      int64  `gorm:"column:user_id"`
-	Date        string `gorm:"column:date"`
-	Type        string `gorm:"column:type"`
-	Description string `gorm:"column:description"`
-	Amount      int64  `gorm:"column:amount"`
+// Payments access
+func (d *Database) Payments() models.Payments {
+	return &Payments{d}
 }
 
-// List represents list of payments
-type List []Payment
-
-// New config for payments
-func New(db *db.Database) *Payments {
-	return &Payments{db}
-}
-
-// Insert creates new payment
-func (p *Payments) Insert(ctx context.Context, pay *Payment) (err error) {
+// Create new payment
+func (p *Payments) Create(ctx context.Context, pay *models.Payment) (err error) {
 	err = p.DB.WithContext(ctx).
 		Create(pay).Error
 
@@ -47,9 +35,9 @@ func (p *Payments) Insert(ctx context.Context, pay *Payment) (err error) {
 
 // All returns a list of payments for given user
 func (p *Payments) All(ctx context.Context,
-	userID int64) (pl *List, err error) {
+	userID int64) (pl *models.PaymentsList, err error) {
 
-	pl = new(List)
+	pl = new(models.PaymentsList)
 
 	err = p.DB.WithContext(ctx).
 		Where("user_id = ?", userID).
@@ -60,7 +48,7 @@ func (p *Payments) All(ctx context.Context,
 }
 
 // Delete deletes element from database
-func (p *Payments) Delete(ctx context.Context, pay *Payment) (err error) {
+func (p *Payments) Delete(ctx context.Context, pay *models.Payment) (err error) {
 	tx := p.DB.WithContext(ctx).
 		Delete(pay)
 
@@ -70,13 +58,13 @@ func (p *Payments) Delete(ctx context.Context, pay *Payment) (err error) {
 	}
 
 	if tx.RowsAffected < 1 {
-		err = apierrors.ErrNotFound
+		err = ErrPaymentNotFound
 	}
-	return
+	return err
 }
 
 // Get gets element from database
-func (p *Payments) Get(ctx context.Context, pay *Payment) (err error) {
+func (p *Payments) Get(ctx context.Context, pay *models.Payment) (err error) {
 	err = p.DB.WithContext(ctx).
 		First(pay).
 		Error
@@ -89,7 +77,7 @@ func (p *Payments) Get(ctx context.Context, pay *Payment) (err error) {
 }
 
 // Update updates element
-func (p *Payments) Update(ctx context.Context, pay *Payment) (err error) {
+func (p *Payments) Update(ctx context.Context, pay *models.Payment) (err error) {
 	res := p.DB.WithContext(ctx).
 		Model(pay).
 		Where("user_id = ?", pay.UserID).

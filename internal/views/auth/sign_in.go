@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"simpleAPI/core/apierrors"
-	"simpleAPI/internal/models/users"
 	"time"
 
+	"simpleAPI/core/apierrors"
+	"simpleAPI/internal/models"
+
 	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type (
@@ -28,36 +28,20 @@ type (
 
 // SignIn handles login
 func (a *Authentication) SignIn(w http.ResponseWriter, r *http.Request) {
-	ul := new(userLogin)
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-	err := dec.Decode(ul)
+	user, err := a.svc.Auth().SignIn(r.Context(), r.Body)
+	defer r.Body.Close()
 	if err != nil {
 		apierrors.HandleHTTPErr(w, err, http.StatusBadRequest)
-		return
 	}
 
-	udb, err := a.uc.ByName(r.Context(), ul.UserName)
-	if err != nil {
-		apierrors.HandleHTTPErr(w, err, http.StatusBadRequest)
-		return
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(udb.Password), []byte(ul.Password))
-	if err != nil {
-		apierrors.HandleHTTPErr(w, apierrors.ErrInvalidLogin, http.StatusBadRequest)
-		return
-	}
-
-	a.sendToken(w, udb)
+	a.sendToken(w, user)
 }
 
-func (a *Authentication) sendToken(w http.ResponseWriter, u *users.User) {
+func (a *Authentication) sendToken(w http.ResponseWriter, u *models.User) {
 	tokDetails, err := a.createTokens(u)
 	if err != nil {
 		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
 		return
-
 	}
 
 	jsdat, _ := json.Marshal(map[string]string{
@@ -67,11 +51,11 @@ func (a *Authentication) sendToken(w http.ResponseWriter, u *users.User) {
 	fmt.Fprint(w, string(jsdat))
 }
 
-func (a *Authentication) createTokens(u *users.User) (*tokenDetails, error) {
+func (a *Authentication) createTokens(u *models.User) (*tokenDetails, error) {
 	var (
 		td        = &tokenDetails{}
-		authTk    = &users.Token{UserID: u.ID}
-		refreshTk = &users.Token{UserID: u.ID}
+		authTk    = &models.Token{UserID: u.ID}
+		refreshTk = &models.Token{UserID: u.ID}
 		tn        = time.Now()
 	)
 

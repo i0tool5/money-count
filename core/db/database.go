@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	pgdb "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,4 +22,14 @@ func New(ctx context.Context, addr string) (db *Database, err error) {
 
 	pgs := &Database{DB: dbs}
 	return pgs, nil
+}
+
+// Close connection to database
+func (d *Database) Close() (err error) {
+	var db *sql.DB
+	db, err = d.DB.DB()
+	if err != nil {
+		return err
+	}
+	return db.Close()
 }

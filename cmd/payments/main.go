@@ -10,8 +10,7 @@ import (
 	"simpleAPI/internal/middleware"
 	"simpleAPI/internal/service"
 
-	pmods "simpleAPI/internal/models/payments"
-	"simpleAPI/internal/models/users"
+	"simpleAPI/internal/models/database"
 	"simpleAPI/internal/views/auth"
 	pviews "simpleAPI/internal/views/payments"
 
@@ -31,21 +30,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer dbs.Close()
 
-	// users models settings
-	uc := users.New(dbs)
+	db := database.New(dbs)
+
+	// payments settings
+	svc := service.New(db)
+	p := pviews.New(svc)
 
 	// auth views settings
 	au := auth.New(
 		cfg.Keys.SecretKey,
 		cfg.Keys.RefreshKey,
-		uc,
+		svc,
 	)
-
-	// payments settings
-	db := pmods.New(dbs)
-	svc := service.New(db)
-	p := pviews.New(svc)
 
 	// middleware settings
 	mvs := middleware.New(cfg.Keys.SecretKey)

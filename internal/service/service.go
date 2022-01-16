@@ -2,13 +2,24 @@ package service
 
 import (
 	"context"
-	"simpleAPI/internal/models/payments"
+	"io"
+
+	"simpleAPI/internal/models"
 )
 
 // Servicer
 type Servicer interface {
+	Auth() Auth
 	Payments() Payments
 	// Users() Users
+}
+
+// Auth interface represents authentication methods
+type Auth interface {
+	SignIn(context.Context, io.Reader) (*models.User, error)
+	SignUp(context.Context, io.Reader) error
+	Refresh(context.Context, io.Reader, string) (
+		*models.User, error)
 }
 
 // Payments
@@ -30,13 +41,22 @@ type Users interface {
 }
 
 type Service struct {
-	db *payments.Payments
+	db models.Repository
 }
 
-func New(dbs *payments.Payments) Servicer {
-	return &Service{dbs}
+// New service
+func New(repo models.Repository) Servicer {
+	return &Service{repo}
+}
+
+func (s *Service) Auth() Auth {
+	return &AuthSvc{s}
 }
 
 func (s *Service) Payments() Payments {
 	return &PaymentsSvc{s}
+}
+
+func (s *Service) Users() Users {
+	panic("not implamented")
 }
