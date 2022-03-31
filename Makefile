@@ -1,13 +1,34 @@
-CREATE_USER="CREATE USER tempuser PASSWORD 'temppass'"
-DROP_USER="DROP USER tempuser"
+DOCKER_COMPOSE=docker-compose -f docker/docker-compose.yaml
+PAYMENTS_DB=postgres://tempuser:temppass@localhost:5432/tempdb?sslmode=disable
 
-database-create:
-	docker exec postgre psql -h 127.0.0.1 -U postgres -c $(CREATE_USER)
-	docker exec postgre psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE tempdb"
-	docker exec postgre psql -h 127.0.0.1 -U tempuser -d tempdb -c "CREATE TABLE payments (id bigserial PRIMARY KEY, user_id bigint not null, date date DEFAULT current_date,type text,description text,amount bigint)"
-	docker exec postgre psql -h 127.0.0.1 -U tempuser -d tempdb -c "CREATE TABLE users (id bigserial PRIMARY KEY,username  text NOT NULL UNIQUE,firstname text,lastname  text,password  text)"
+.PHONY: docker.run docker.stop db.create db.drop migrate.up migrate.down
 
-database-drop:
-	docker exec postgre psql -h 127.0.0.1 -U postgres -c "DROP DATABASE tempdb"
-	docker exec postgre psql -h 127.0.0.1 -U postgres -c $(DROP_USER)
+docker.run:
+	${DOCKER_COMPOSE} up -d
+
+docker.stop:
+	${DOCKER_COMPOSE} down
+
+db.create:
+	docker exec money-count-postgres psql -h 127.0.0.1 -U postgres \
+		-f etc/db/scripts/create_db.sql
+
+db.drop:
+	docker exec money-count-postgres psql -h 127.0.0.1 -U postgres \
+		-f etc/db/scripts/drop_db.sql
+
+# migrate.up:
+# 	docker run --mount=type=bind,src=${pwd}/docker/etc/migrations,dst=migrations/ --network host migrate/migrate \
+# 	-path =/migrations/ -database ${PAYMENTS_DB} up
+
+migrate.up:
+	docker run -v ${pwd}/docker/etc/db/migrations:/migrations --network host migrate/migrate \
+    -path=/migrations/ -database ${PAYMENTS_DB} up 2
+
+migrate.down:
+	docker run --mount=type=bind,src=${pwd}/docker/etc/migrations:/migrations/ --network host migrate/migrate \
+	-path =/migrations/ -database ${PAYMENTS_DB} down
+
+
+
 
