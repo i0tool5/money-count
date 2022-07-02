@@ -3,13 +3,13 @@ package payments
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
 	"simpleAPI/core/apictx"
 	"simpleAPI/core/apierrors"
 
+	"simpleAPI/internal/models"
 	"simpleAPI/internal/service"
 	"simpleAPI/internal/views"
 
@@ -20,7 +20,8 @@ var _ views.BaseView = (*Payment)(nil)
 
 type Payments interface {
 	views.BaseView
-	List(w http.ResponseWriter, r *http.Request)
+	List(http.ResponseWriter, *http.Request)
+	GroupByMonth(http.ResponseWriter, *http.Request)
 }
 
 // Payment it is a payments config structure
@@ -42,11 +43,13 @@ func (p *Payment) List(w http.ResponseWriter, r *http.Request) {
 	list, err := p.Service.Payments().List(r.Context(), uid)
 	if err != nil {
 		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
+		return
 	}
 
 	buf, err := list.JSON()
 	if err != nil {
 		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
+		return
 	}
 	fmt.Fprint(w, string(buf))
 }
@@ -68,9 +71,12 @@ func (p *Payment) Retrieve(w http.ResponseWriter, r *http.Request) {
 
 	pmt, err := p.Service.Payments().Retrieve(r.Context(), uid, int64(id))
 
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		return
+	}
+
 	buf, err := pmt.JSON()
-	if err != nil {
-		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
 		return
 	}
 
@@ -88,8 +94,6 @@ func (p *Payment) Create(w http.ResponseWriter, r *http.Request) {
 
 	u := apictx.User(r.Context())
 	uid := u.(int64)
-
-	log.Printf("user id: %d\n", uid)
 
 	err = p.Service.Payments().Create(r.Context(), uid, content)
 	if err != nil {
@@ -159,4 +163,21 @@ func (p *Payment) Update(w http.ResponseWriter, r *http.Request) {
 	if apierrors.HandleHTTPErr(w, err, http.StatusBadRequest) {
 		return
 	}
+}
+
+func (p *Payment) GroupByMonth(w http.ResponseWriter, r *http.Request) {
+	user := apictx.User(r.Context())
+	uid := user.(int64)
+	mgl, err := p.Service.Payments().GroupedByMonth(r.Context(), models.UserID(uid))
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		fmt.Println("err here")
+		return
+	}
+
+	response, err := mgl.JSON()
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		return
+	}
+
+	fmt.Fprint(w, string(response))
 }

@@ -6,10 +6,12 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+type UserID int64
+
 // User struct represent user model
 type User struct {
-	ID        int64  `json:"id" gorm:"column:id"`
-	UserName  string `json:"username" gorm:"column:username"`
+	ID        UserID `json:"id" gorm:"column:id"`
+	UserName  string `json:"username" gorm:"column:username;unique"`
 	FirstName string `json:"firstname" gorm:"column:firstname"`
 	LastName  string `json:"lastname" gorm:"column:lastname"`
 	Password  string `json:"password,omitempty" gorm:"column:password"`

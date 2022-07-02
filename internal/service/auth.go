@@ -123,7 +123,7 @@ func (as *AuthSvc) Refresh(ctx context.Context, buffer io.Reader,
 	}
 
 	usr := &models.User{
-		ID: ut.UserID,
+		ID: models.UserID(ut.UserID),
 	}
 
 	return usr, nil

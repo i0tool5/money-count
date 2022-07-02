@@ -59,6 +59,7 @@ func main() {
 	r.HandleFunc("/api/payments/{id}", p.Retrieve).Methods("GET")
 	r.HandleFunc("/api/payments/{id}", p.Update).Methods("PUT")
 	r.HandleFunc("/api/payments/{id}", p.Destroy).Methods("DELETE")
+	r.HandleFunc("/api/payments-group/by-month", p.GroupByMonth)
 
 	srv := server.New(cfg.Server.BindAddr)
 	log.Printf("[*] Starting server on %s\n", cfg.Server.BindAddr)

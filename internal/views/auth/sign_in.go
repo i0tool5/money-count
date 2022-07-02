@@ -54,8 +54,8 @@ func (a *Authentication) sendToken(w http.ResponseWriter, u *models.User) {
 func (a *Authentication) createTokens(u *models.User) (*tokenDetails, error) {
 	var (
 		td        = &tokenDetails{}
-		authTk    = &models.Token{UserID: u.ID}
-		refreshTk = &models.Token{UserID: u.ID}
+		authTk    = &models.Token{UserID: int64(u.ID)}
+		refreshTk = &models.Token{UserID: int64(u.ID)}
 		tn        = time.Now()
 	)
 

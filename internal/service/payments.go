@@ -26,6 +26,16 @@ type PaymentsList struct {
 	Result []Payment `json:"result"`
 }
 
+type MonthGrouped struct {
+	Month  int64 `json:"month"`
+	Year   int64 `json:"year"`
+	Amount int64 `json:"amount"`
+}
+
+type MonthGroupedList struct {
+	Result []MonthGrouped `json:"result"`
+}
+
 // JSON representation of payment
 func (pt *Payment) JSON() (b []byte, err error) {
 	return json.Marshal(pt)
@@ -60,6 +70,25 @@ func (pl PaymentsList) JSON() (b []byte, err error) {
 	return json.Marshal(pl)
 }
 
+func (mg *MonthGrouped) fromModel(m *models.MonthGrouping) {
+	mg.Amount = m.Amount
+	mg.Month = m.Month
+	mg.Year = m.Year
+}
+
+func (mgl *MonthGroupedList) fromModel(ml *[]models.MonthGrouping) {
+	for _, el := range *ml {
+		p := new(MonthGrouped)
+		p.fromModel(&el)
+		mgl.Result = append(mgl.Result, *p)
+	}
+}
+
+// JSON representation of the payments grouped by month
+func (mgl *MonthGroupedList) JSON() ([]byte, error) {
+	return json.Marshal(mgl)
+}
+
 // Create new payment
 func (svc *PaymentsSvc) Create(ctx context.Context, uid int64, data []byte) (err error) {
 	var p = new(Payment)
@@ -79,6 +108,7 @@ func (svc *PaymentsSvc) Retrieve(ctx context.Context, userID, payID int64) (
 
 	pm := new(models.Payment)
 	pm.ID = payID
+	pm.UserID = userID
 
 	ps = new(Payment)
 
@@ -86,6 +116,7 @@ func (svc *PaymentsSvc) Retrieve(ctx context.Context, userID, payID int64) (
 	if err != nil {
 		return nil, err
 	}
+
 	ps.fromModel(pm)
 	return
 }
@@ -107,7 +138,7 @@ func (svc *PaymentsSvc) List(ctx context.Context, uid int64) (
 	var ml *models.PaymentsList
 	pl = new(PaymentsList)
 
-	ml, err = svc.db.Payments().All(ctx, uid)
+	ml, err = svc.db.Payments().All(ctx, models.UserID(uid))
 	if err != nil {
 		return nil, err
 	}
@@ -119,4 +150,19 @@ func (svc *PaymentsSvc) List(ctx context.Context, uid int64) (
 	}
 
 	return
+}
+
+// GroupedByMonth returns payments grouped by month
+func (svc *PaymentsSvc) GroupedByMonth(ctx context.Context, uid models.UserID) (
+	*MonthGroupedList, error) {
+
+	gm, err := svc.db.Payments().GroupByMonth(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	mgl := new(MonthGroupedList)
+	mgl.fromModel(gm)
+
+	return mgl, nil
 }

@@ -22,7 +22,7 @@ func (u *Users) Create(ctx context.Context, user models.User) (err error) {
 }
 
 // ByID gets user by id
-func (u *Users) ByID(ctx context.Context, userID int64) (usr *models.User, err error) {
+func (u *Users) ByID(ctx context.Context, userID models.UserID) (usr *models.User, err error) {
 	usr = new(models.User)
 	usr.ID = userID
 

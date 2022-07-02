@@ -10,5 +10,12 @@ type Payment struct {
 	Amount      int64  `gorm:"column:amount"`
 }
 
+// MonthGrouping
+type MonthGrouping struct {
+	Month  int64
+	Year   int64
+	Amount int64
+}
+
 // PaymentsList represents list of payments
 type PaymentsList []Payment

@@ -29,6 +29,7 @@ type Payments interface {
 	Update(context.Context, *Payment) error
 	Delete(context.Context, *Payment) error
 	List(context.Context, int64) (*PaymentsList, error)
+	GroupedByMonth(context.Context, models.UserID) (*MonthGroupedList, error)
 }
 
 // Users
