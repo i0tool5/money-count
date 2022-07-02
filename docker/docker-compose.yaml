@@ -1,15 +1,32 @@
-version: "3.6"
+version: "3.8"
 
 services: 
-  database:
-    container_name: postgre
-    image: postgres:latest
+  postgres:
+    container_name: money-count-postgres
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    env_file: ./etc/db/.env
     volumes:
       - db-data:/var/lib/postgresql/data
-    env_file: ./etc/db/.env
     ports:
       - "5432:5432"
     command: ['-c', 'log_statement=all']
 
+  migrate:
+    container_name: money-count-migrate
+    image: migrate/migrate
+    restart: on-failure
+    depends_on:
+      - postgres
+    volumes:
+      - ./etc/db/migrations:/migrations
+    # here instead of localhost as the host we use 'postgres'
+    # template: postgres://{db_user}:{db_pass}@{postgres_service_name}5432/{db_name}?sslmode=disable
+    # for example: 
+    # postgres://tempdb:temppass@postgres:5432/tempdb?sslmode=disable
+    command:
+      [ "-path", "/migrations", "-database",  "postgres://tempuser:temppass@postgres:5432/tempdb?sslmode=disable", "up" ]
+      
 volumes:
   db-data:

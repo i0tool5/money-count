@@ -1,4 +1,4 @@
-# Money Count Project
+## Money Count Project
 
 Simple RESTFull application, created to track expenses and provide information on them
 
@@ -11,3 +11,15 @@ Currently used database is Postgresql
 ## ORM
 
 gorm is used with postgres driver
+
+## Quick Start 
+
+```shell
+make docker.run 
+
+# Flow:
+#     - Build and run postgres Docker container
+#     - Create all databases
+#     - Apply migrations (github.com/golang-migrate/migrate)
+
+```
