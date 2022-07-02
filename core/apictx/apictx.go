@@ -1,6 +1,8 @@
 package apictx
 
-import "context"
+import (
+	"context"
+)
 
 // UserCtx represents user context in request
 type UserCtx string

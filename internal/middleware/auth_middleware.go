@@ -9,7 +9,7 @@ import (
 
 	"simpleAPI/core/apictx"
 	"simpleAPI/core/apierrors"
-	"simpleAPI/internal/models/users"
+	"simpleAPI/internal/models"
 )
 
 type authMiddleware struct {
@@ -49,7 +49,7 @@ func (a *authMiddleware) authCheck(next http.Handler) http.Handler {
 
 		jwtToken := splited[1]
 		// handle jwtToken
-		tk := new(users.Token)
+		tk := new(models.Token) // TODO: move token to another place?
 
 		token, err := jwt.ParseWithClaims(jwtToken, tk,
 			func(t *jwt.Token) (interface{}, error) {
@@ -64,6 +64,7 @@ func (a *authMiddleware) authCheck(next http.Handler) http.Handler {
 			apierrors.HandleHTTPErr(w, apierrors.ErrInvalidLogin, http.StatusForbidden)
 			return
 		}
+
 		var ct apictx.UserCtx
 		ctx := context.WithValue(r.Context(), ct, tk.UserID)
 		r = r.WithContext(ctx)
