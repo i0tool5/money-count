@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"simpleAPI/core/apictx"
-	"simpleAPI/core/apierrors"
+	"simpleAPI/internal/core/apictx"
+	"simpleAPI/internal/core/apierrors"
 
-	"simpleAPI/internal/models"
-	"simpleAPI/internal/service"
-	"simpleAPI/internal/views"
+	views "simpleAPI/internal/moneycount/handlers"
+	"simpleAPI/internal/moneycount/models"
+	"simpleAPI/internal/moneycount/service"
 
 	"github.com/gorilla/mux"
 )

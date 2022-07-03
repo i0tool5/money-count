@@ -4,15 +4,15 @@ import (
 	"context"
 	"log"
 
-	"simpleAPI/core/config"
-	"simpleAPI/core/db"
-	"simpleAPI/core/server"
-	"simpleAPI/internal/middleware"
-	"simpleAPI/internal/service"
+	"simpleAPI/internal/config"
+	"simpleAPI/internal/core/db"
+	"simpleAPI/internal/core/server"
+	"simpleAPI/internal/moneycount/middleware"
+	"simpleAPI/internal/moneycount/service"
 
-	"simpleAPI/internal/models/database"
-	"simpleAPI/internal/views/auth"
-	pviews "simpleAPI/internal/views/payments"
+	"simpleAPI/internal/moneycount/handlers/auth"
+	pviews "simpleAPI/internal/moneycount/handlers/payments"
+	"simpleAPI/internal/moneycount/models/database"
 
 	"github.com/gorilla/mux"
 )

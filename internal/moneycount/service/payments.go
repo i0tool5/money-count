@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"simpleAPI/internal/models"
+	"simpleAPI/internal/moneycount/models"
 )
 
 type PaymentsSvc struct {

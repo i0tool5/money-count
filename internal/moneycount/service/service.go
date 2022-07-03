@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"simpleAPI/internal/models"
+	"simpleAPI/internal/moneycount/models"
 )
 
 // Servicer

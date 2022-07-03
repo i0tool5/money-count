@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"simpleAPI/core/db"
+	"simpleAPI/internal/core/db"
 	"testing"
 )
 

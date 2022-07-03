@@ -7,7 +7,7 @@ import (
 	"errors"
 	"io"
 
-	"simpleAPI/internal/models"
+	"simpleAPI/internal/moneycount/models"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
