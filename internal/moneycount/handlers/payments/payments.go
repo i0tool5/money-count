@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"simpleAPI/internal/core/apictx"
-	"simpleAPI/internal/core/apierrors"
+	"simpleAPI/pkg/apictx"
+	"simpleAPI/pkg/apierrors"
 
 	views "simpleAPI/internal/moneycount/handlers"
 	"simpleAPI/internal/moneycount/models"

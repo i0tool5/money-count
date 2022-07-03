@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"simpleAPI/internal/config"
-	"simpleAPI/internal/core/db"
-	"simpleAPI/internal/core/server"
 	"simpleAPI/internal/moneycount/middleware"
 	"simpleAPI/internal/moneycount/service"
+	"simpleAPI/pkg/db"
+	"simpleAPI/pkg/server"
 
 	"simpleAPI/internal/moneycount/handlers/auth"
 	pviews "simpleAPI/internal/moneycount/handlers/payments"
