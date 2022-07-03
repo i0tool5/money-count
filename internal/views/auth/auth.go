@@ -2,7 +2,7 @@ package auth
 
 import (
 	"net/http"
-	"simpleAPI/internal/models/users"
+	"simpleAPI/internal/service"
 )
 
 var _ Auth = (*Authentication)(nil)
@@ -18,16 +18,16 @@ type Auth interface {
 type Authentication struct {
 	secretKey  string
 	refreshKey string
-	uc         *users.Users
+	svc        service.Servicer
 }
 
 // New is a fabric function to create auth
 func New(secKey, refKey string,
-	uc *users.Users) *Authentication {
+	svc service.Servicer) *Authentication {
 
 	return &Authentication{
 		secretKey:  secKey,
 		refreshKey: refKey,
-		uc:         uc,
+		svc:        svc,
 	}
 }

@@ -11,6 +11,7 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    command: ['-c', 'log_statement=all']
 
   migrate:
     container_name: money-count-migrate

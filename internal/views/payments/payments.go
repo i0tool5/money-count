@@ -1,7 +1,6 @@
 package payments
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +9,8 @@ import (
 	"simpleAPI/core/apictx"
 	"simpleAPI/core/apierrors"
 
-	"simpleAPI/internal/models/payments"
+	"simpleAPI/internal/models"
+	"simpleAPI/internal/service"
 	"simpleAPI/internal/views"
 
 	"github.com/gorilla/mux"
@@ -20,17 +20,18 @@ var _ views.BaseView = (*Payment)(nil)
 
 type Payments interface {
 	views.BaseView
-	List(w http.ResponseWriter, r *http.Request)
+	List(http.ResponseWriter, *http.Request)
+	GroupByMonth(http.ResponseWriter, *http.Request)
 }
 
 // Payment it is a payments config structure
 type Payment struct {
-	DB *payments.Payments
+	Service service.Servicer
 }
 
-// New asd
-func New(db *payments.Payments) Payments {
-	return &Payment{DB: db}
+// New payments view
+func New(svc service.Servicer) Payments {
+	return &Payment{Service: svc}
 }
 
 // List returns a list of objects
@@ -39,16 +40,18 @@ func (p *Payment) List(w http.ResponseWriter, r *http.Request) {
 	u := apictx.User(r.Context())
 	uid := u.(int64)
 
-	lst, err := p.DB.All(r.Context(), uid)
-	if apierrors.HandleHTTPErr(w, err, http.StatusNotFound) {
-		return
-	}
-	dat, err := json.Marshal(lst)
-	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+	list, err := p.Service.Payments().List(r.Context(), uid)
+	if err != nil {
+		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprint(w, string(dat))
+	buf, err := list.JSON()
+	if err != nil {
+		apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(w, string(buf))
 }
 
 // Retrieve returns specific object
@@ -65,20 +68,19 @@ func (p *Payment) Retrieve(w http.ResponseWriter, r *http.Request) {
 
 	u := apictx.User(r.Context())
 	uid := u.(int64)
-	sel := &payments.Payment{
-		ID:     int64(id),
-		UserID: uid,
-	}
-	err = p.DB.Get(r.Context(), sel)
-	if apierrors.HandleHTTPErr(w, err, http.StatusNotFound) {
-		return
-	}
 
-	msh, err := json.Marshal(sel)
+	pmt, err := p.Service.Payments().Retrieve(r.Context(), uid, int64(id))
+
 	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
 		return
 	}
-	fmt.Fprint(w, string(msh))
+
+	buf, err := pmt.JSON()
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		return
+	}
+
+	fmt.Fprint(w, string(buf))
 }
 
 // Create handles creates object request
@@ -93,18 +95,12 @@ func (p *Payment) Create(w http.ResponseWriter, r *http.Request) {
 	u := apictx.User(r.Context())
 	uid := u.(int64)
 
-	payment := new(payments.Payment)
-	err = json.Unmarshal(content, payment)
-	if apierrors.HandleHTTPErr(w, err, http.StatusBadRequest) {
+	err = p.Service.Payments().Create(r.Context(), uid, content)
+	if err != nil {
+		apierrors.HandleHTTPErr(w, err, http.StatusBadRequest)
 		return
 	}
 
-	payment.UserID = uid
-
-	err = p.DB.Insert(r.Context(), payment)
-	if apierrors.HandleHTTPErr(w, err, http.StatusBadRequest) {
-		return
-	}
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -124,13 +120,12 @@ func (p *Payment) Destroy(w http.ResponseWriter, r *http.Request) {
 	u := apictx.User(r.Context())
 	uid := u.(int64)
 
-	pay := &payments.Payment{
+	err = p.Service.Payments().Delete(r.Context(), &service.Payment{
 		ID:     int64(id),
 		UserID: uid,
-	}
-	err = p.DB.Delete(r.Context(), pay)
-	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
-		return
+	})
+	if err != nil {
+		apierrors.HandleHTTPErr(w, err, http.StatusNotFound)
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -156,16 +151,33 @@ func (p *Payment) Update(w http.ResponseWriter, r *http.Request) {
 	u := apictx.User(r.Context())
 	uid := u.(int64)
 
-	payment := new(payments.Payment)
+	payment := new(service.Payment)
 	payment.ID = int64(id)
 	payment.UserID = uid
-	err = json.Unmarshal(content, payment)
+	err = payment.FromJSON(content)
 	if apierrors.HandleHTTPErr(w, err, http.StatusBadRequest) {
 		return
 	}
 
-	err = p.DB.Update(r.Context(), payment)
+	err = p.Service.Payments().Update(r.Context(), payment)
 	if apierrors.HandleHTTPErr(w, err, http.StatusBadRequest) {
 		return
 	}
+}
+
+func (p *Payment) GroupByMonth(w http.ResponseWriter, r *http.Request) {
+	user := apictx.User(r.Context())
+	uid := user.(int64)
+	mgl, err := p.Service.Payments().GroupedByMonth(r.Context(), models.UserID(uid))
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		fmt.Println("err here")
+		return
+	}
+
+	response, err := mgl.JSON()
+	if apierrors.HandleHTTPErr(w, err, http.StatusInternalServerError) {
+		return
+	}
+
+	fmt.Fprint(w, string(response))
 }

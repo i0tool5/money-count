@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"simpleAPI/core/config"
 	"simpleAPI/core/db"
 	"simpleAPI/core/server"
 	"simpleAPI/internal/middleware"
+	"simpleAPI/internal/service"
 
-	pmods "simpleAPI/internal/models/payments"
-	"simpleAPI/internal/models/users"
+	"simpleAPI/internal/models/database"
 	"simpleAPI/internal/views/auth"
 	pviews "simpleAPI/internal/views/payments"
 
@@ -31,20 +30,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer dbs.Close()
 
-	// users models settings
-	uc := users.New(dbs)
+	db := database.New(dbs)
+
+	// payments settings
+	svc := service.New(db)
+	p := pviews.New(svc)
 
 	// auth views settings
 	au := auth.New(
 		cfg.Keys.SecretKey,
 		cfg.Keys.RefreshKey,
-		uc,
+		svc,
 	)
-
-	// payments settings
-	db := pmods.New(dbs)
-	p := pviews.New(db)
 
 	// middleware settings
 	mvs := middleware.New(cfg.Keys.SecretKey)
@@ -60,8 +59,9 @@ func main() {
 	r.HandleFunc("/api/payments/{id}", p.Retrieve).Methods("GET")
 	r.HandleFunc("/api/payments/{id}", p.Update).Methods("PUT")
 	r.HandleFunc("/api/payments/{id}", p.Destroy).Methods("DELETE")
+	r.HandleFunc("/api/payments-group/by-month", p.GroupByMonth)
 
 	srv := server.New(cfg.Server.BindAddr)
-	fmt.Printf("[*] Starting server on %s\n", cfg.Server.BindAddr)
+	log.Printf("[*] Starting server on %s\n", cfg.Server.BindAddr)
 	srv.ListenAndServe(ctx, r)
 }
