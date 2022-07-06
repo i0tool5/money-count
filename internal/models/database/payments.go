@@ -50,9 +50,12 @@ func (p *Payments) All(ctx context.Context,
 }
 
 // Delete deletes element from database
+// TODO:Possibly dangerous method which can delete all user payments.
 func (p *Payments) Delete(ctx context.Context, pay *models.Payment) (err error) {
 	tx := p.DB.WithContext(ctx).
 		Where("user_id = ?", pay.UserID).
+		// TODO: Check it pls
+		Where("id = ?", pay.ID).
 		Delete(pay)
 
 	err = tx.Error
@@ -67,9 +70,12 @@ func (p *Payments) Delete(ctx context.Context, pay *models.Payment) (err error) 
 }
 
 // Get gets element from database
+// TODO: Get method gets the first payment, not a unique (randrom record i think), but user_id isn't a primary key.
 func (p *Payments) Get(ctx context.Context, pay *models.Payment) (err error) {
 	err = p.DB.WithContext(ctx).
 		Where("user_id = ?", pay.UserID).
+		// TODO: check it pls.
+		Where("id = ?", pay.ID).
 		First(pay).
 		Error
 
@@ -81,10 +87,14 @@ func (p *Payments) Get(ctx context.Context, pay *models.Payment) (err error) {
 }
 
 // Update updates element
+// SameSituation:
+// possibly to add a unique payment key (id pk)
 func (p *Payments) Update(ctx context.Context, pay *models.Payment) (err error) {
 	res := p.DB.WithContext(ctx).
 		Model(pay).
 		Where("user_id = ?", pay.UserID).
+		// TODO: check it pls.
+		Where("id = ?", pay.ID).
 		Omit("user_id").
 		Updates(pay)
 
