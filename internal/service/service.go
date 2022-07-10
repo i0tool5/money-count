@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"simpleapi/internal/models"
+	"github.com/i0tool5/money-count/internal/models"
 )
 
 // Servicer

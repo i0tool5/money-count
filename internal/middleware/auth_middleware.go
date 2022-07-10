@@ -7,9 +7,9 @@ import (
 
 	"github.com/golang-jwt/jwt"
 
-	"simpleapi/core/apictx"
-	"simpleapi/core/apierrors"
-	"simpleapi/internal/models"
+	"github.com/i0tool5/money-count/core/apictx"
+	"github.com/i0tool5/money-count/core/apierrors"
+	"github.com/i0tool5/money-count/internal/models"
 )
 
 type authMiddleware struct {

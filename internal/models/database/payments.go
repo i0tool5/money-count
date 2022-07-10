@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"simpleapi/internal/models"
+	"github.com/i0tool5/money-count/internal/models"
 
 	"gorm.io/gorm"
 )

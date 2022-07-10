@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"simpleapi/internal/models"
+	"github.com/i0tool5/money-count/internal/models"
 )
 
 // Users for user models database

@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"simpleapi/core/apierrors"
+	"github.com/i0tool5/money-count/core/apierrors"
 )
 
 // SignUp is signup handler

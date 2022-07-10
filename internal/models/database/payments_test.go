@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"simpleapi/core/db"
+	"github.com/i0tool5/money-count/core/db"
 	"testing"
 )
 

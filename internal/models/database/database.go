@@ -1,8 +1,8 @@
 package database
 
 import (
-	"simpleapi/core/db"
-	"simpleapi/internal/models"
+	"github.com/i0tool5/money-count/core/db"
+	"github.com/i0tool5/money-count/internal/models"
 )
 
 var _ models.Repository = (*Database)(nil)
