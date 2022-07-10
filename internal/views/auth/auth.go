@@ -2,7 +2,7 @@ package auth
 
 import (
 	"net/http"
-	"simpleAPI/internal/service"
+	"simpleapi/internal/service"
 )
 
 var _ Auth = (*Authentication)(nil)

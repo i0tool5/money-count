@@ -1,8 +1,8 @@
 package database
 
 import (
-	"simpleAPI/core/db"
-	"simpleAPI/internal/models"
+	"simpleapi/core/db"
+	"simpleapi/internal/models"
 )
 
 var _ models.Repository = (*Database)(nil)

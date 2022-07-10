@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"simpleAPI/core/apierrors"
+	"simpleapi/core/apierrors"
 )
 
 // SignUp is signup handler

@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"simpleAPI/internal/models"
+	"simpleapi/internal/models"
 )
 
 // Users for user models database
