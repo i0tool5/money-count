@@ -2,7 +2,8 @@ package auth
 
 import (
 	"net/http"
-	"simpleAPI/internal/moneycount/service"
+
+	"github.com/i0tool5/money-count/internal/service"
 )
 
 var _ Auth = (*Authentication)(nil)

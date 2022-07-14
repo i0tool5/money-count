@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"simpleAPI/internal/moneycount/models"
+	"github.com/i0tool5/money-count/internal/moneycount/models"
 )
 
 type PaymentsSvc struct {

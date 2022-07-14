@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"simpleAPI/internal/moneycount/models"
-	"simpleAPI/pkg/apierrors"
+	"github.com/i0tool5/money-count/internal/moneycount/models"
+	"github.com/i0tool5/money-count/pkg/apierrors"
 
 	"github.com/golang-jwt/jwt"
 )

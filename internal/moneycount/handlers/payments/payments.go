@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"simpleAPI/pkg/apictx"
-	"simpleAPI/pkg/apierrors"
+	views "github.com/i0tool5/money-count/internal/moneycount/handlers"
+	"github.com/i0tool5/money-count/internal/moneycount/models"
+	"github.com/i0tool5/money-count/internal/moneycount/service"
 
-	views "simpleAPI/internal/moneycount/handlers"
-	"simpleAPI/internal/moneycount/models"
-	"simpleAPI/internal/moneycount/service"
+	"github.com/i0tool5/money-count/pkg/apictx"
+	"github.com/i0tool5/money-count/pkg/apierrors"
 
 	"github.com/gorilla/mux"
 )

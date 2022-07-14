@@ -1,4 +1,4 @@
-module simpleAPI
+module github.com/i0tool5/money-count
 
 go 1.18
 

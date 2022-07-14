@@ -2,8 +2,9 @@ package database
 
 import (
 	"context"
-	"simpleAPI/pkg/db"
 	"testing"
+
+	"github.com/i0tool5/money-count/pkg/db"
 )
 
 func TestGroupByMonth(t *testing.T) {
