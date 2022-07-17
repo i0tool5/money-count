@@ -4,15 +4,15 @@ import (
 	"context"
 	"log"
 
-	"github.com/i0tool5/money-count/core/config"
-	"github.com/i0tool5/money-count/core/db"
-	"github.com/i0tool5/money-count/core/server"
-	"github.com/i0tool5/money-count/internal/middleware"
-	"github.com/i0tool5/money-count/internal/service"
+	"github.com/i0tool5/money-count/internal/config"
+	"github.com/i0tool5/money-count/internal/moneycount/middleware"
+	"github.com/i0tool5/money-count/internal/moneycount/service"
+	"github.com/i0tool5/money-count/pkg/db"
+	"github.com/i0tool5/money-count/pkg/server"
 
-	"github.com/i0tool5/money-count/internal/models/database"
-	"github.com/i0tool5/money-count/internal/views/auth"
-	pviews "github.com/i0tool5/money-count/internal/views/payments"
+	"github.com/i0tool5/money-count/internal/moneycount/handlers/auth"
+	pviews "github.com/i0tool5/money-count/internal/moneycount/handlers/payments"
+	"github.com/i0tool5/money-count/internal/moneycount/models/database"
 
 	"github.com/gorilla/mux"
 )

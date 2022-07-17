@@ -23,6 +23,7 @@ var middlewares = []mux.MiddlewareFunc{
 	loggingMiddleware,
 }
 
+// noAuth - array of endpoints that doesn't require authentication
 var noAuth = []string{
 	"/api/sign_in",
 	"/api/sign_up",

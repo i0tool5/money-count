@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	views "github.com/i0tool5/money-count/internal/moneycount/handlers"
+	"github.com/i0tool5/money-count/internal/moneycount/handlers"
 	"github.com/i0tool5/money-count/internal/moneycount/models"
 	"github.com/i0tool5/money-count/internal/moneycount/service"
 
@@ -16,10 +16,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var _ views.BaseView = (*Payment)(nil)
+var _ handlers.BaseHandler = (*Payment)(nil)
 
 type Payments interface {
-	views.BaseView
+	handlers.BaseHandler
 	List(http.ResponseWriter, *http.Request)
 	GroupByMonth(http.ResponseWriter, *http.Request)
 }
