@@ -2,8 +2,9 @@ package auth
 
 import (
 	"net/http"
-	"github.com/i0tool5/money-count/core/apierrors"
-	"github.com/i0tool5/money-count/internal/service"
+
+	"github.com/i0tool5/money-count/internal/moneycount/service"
+	"github.com/i0tool5/money-count/pkg/apierrors"
 )
 
 // Refresh handles token refreshing

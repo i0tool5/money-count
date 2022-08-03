@@ -6,20 +6,20 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/i0tool5/money-count/core/apictx"
-	"github.com/i0tool5/money-count/core/apierrors"
+	"github.com/i0tool5/money-count/internal/moneycount/handlers"
+	"github.com/i0tool5/money-count/internal/moneycount/models"
+	"github.com/i0tool5/money-count/internal/moneycount/service"
 
-	"github.com/i0tool5/money-count/internal/models"
-	"github.com/i0tool5/money-count/internal/service"
-	"github.com/i0tool5/money-count/internal/views"
+	"github.com/i0tool5/money-count/pkg/apictx"
+	"github.com/i0tool5/money-count/pkg/apierrors"
 
 	"github.com/gorilla/mux"
 )
 
-var _ views.BaseView = (*Payment)(nil)
+var _ handlers.BaseHandler = (*Payment)(nil)
 
 type Payments interface {
-	views.BaseView
+	handlers.BaseHandler
 	List(http.ResponseWriter, *http.Request)
 	GroupByMonth(http.ResponseWriter, *http.Request)
 }

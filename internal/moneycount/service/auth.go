@@ -7,7 +7,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/i0tool5/money-count/internal/models"
+	"github.com/i0tool5/money-count/internal/moneycount/models"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"

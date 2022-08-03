@@ -22,13 +22,7 @@ db.drop:
 # 	-path =/migrations/ -database ${PAYMENTS_DB} up
 
 migrate.up:
-	docker run -v ${pwd}/docker/etc/db/migrations:/migrations --network host migrate/migrate \
-    -path=/migrations/ -database ${PAYMENTS_DB} up 2
+	migrate -path=internal/sql/migrations -database ${PAYMENTS_DB} up
 
 migrate.down:
-	docker run --mount=type=bind,src=${pwd}/docker/etc/migrations:/migrations/ --network host migrate/migrate \
-	-path =/migrations/ -database ${PAYMENTS_DB} down
-
-
-
-
+	migrate -path=internal/sql/migrations -database ${PAYMENTS_DB} down
