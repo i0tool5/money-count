@@ -10,6 +10,8 @@ It hasn't done yet, but it will eventually
 
 Currently used database is Postgresql
 
+[migrate](https://github.com/golang-migrate/migrate) tool is used to apply migrations to the database
+
 ## ORM
 
 gorm is used with postgres driver
